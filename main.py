@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
@@ -19,9 +20,9 @@ posts: list[dict] = [
     },
 ]
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 def home():
-    return {"message": "Welcome to the FastAPI Blog"}
+    return f"<h1>Welcom to the FastApi Blog<h1>"
 
 @app.get("/api/post")
 def get_post():
