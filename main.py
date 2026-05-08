@@ -20,7 +20,8 @@ posts: list[dict] = [
     },
 ]
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
+@app.get("/post", response_class=HTMLResponse, include_in_schema=False)
 def home():
     return f"<h1>Welcom to the FastApi Blog<h1>"
 
