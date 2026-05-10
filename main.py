@@ -42,7 +42,5 @@ def get_post(post_id: int):
             return post
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
-@app.get("/about",  include_in_schema=False)
-def about(request: Request):
-    return templates.TemplateResponse(request, "about.html", {"title": "About"})
+
 
