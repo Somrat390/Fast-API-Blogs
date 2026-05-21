@@ -48,7 +48,13 @@ def home(request: Request, db: Annotated[Session, Depends(get_db)]):
         request, "home.html", 
         {"posts": posts, "title": "Home"})
 
-
+app.get("/posts/{post_id}", include_in_schema=False)
+def post_page(request: Request, post_id: int, db: Annotated[Session, Depends(get_db)]):
+    result = db.execute(select(models.Post).where(models.Post.id == post_id))
+    post = result.scalars().first()
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+    return templates.TemplateResponse(request, "post.html", {"post": post, "title": post.title[:50]})
 
 
 @app.post(
@@ -130,12 +136,7 @@ def create_post(post: PostCreate):
     return new_post
 
 
-@app.get("/posts/{post_id}", response_model=PostResponse)
-def get_post(request: Request, post_id: int):
-    for post in posts:
-        if post.get("id") == post_id:
-            return templates.TemplateResponse(request, "post.html", {"post": post, "title": post.get("title")})
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+@
 
 
 @app.exception_handler(StarletteHTTPException)
