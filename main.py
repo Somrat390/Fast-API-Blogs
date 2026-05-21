@@ -56,8 +56,8 @@ def post_page(request: Request, post_id: int, db: Annotated[Session, Depends(get
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
     return templates.TemplateResponse(request, "post.html", {"post": post, "title": post.title[:50]})
 
-@app.get("/users/{user_id}/posts", include_in_schema=False)
-def user_posts(request: Request, user_id: int, db: Annotated[Session, Depends(get_db)]):
+@app.get("/users/{user_id}/posts", include_in_schema=False, name="user_posts")
+def user_posts_page(request: Request, user_id: int, db: Annotated[Session, Depends(get_db)]):
     result = db.execute(select(models.User).where(models.User.id == user_id))
     user = result.scalars().first()
     if not user:
@@ -111,7 +111,7 @@ def get_user(user_id : int, db: Annotated[Session, Depends(get_db)]):
 
 
 @app.get("/api/users/{user_id}/posts", response_model=list[PostResponse])
-def get_user_posts(user_id: int, db: Annotated[Session, Depends(get_db)]):
+def user_posts_page(user_id: int, db: Annotated[Session, Depends(get_db)]):
 
     result = db.execute(select(models.User).where(models.User.id == user_id))
 
@@ -152,13 +152,12 @@ def create_post(post: PostCreate, db: Annotated[Session, Depends(get_db)]):
 
 
 @app.get("/api/posts/{post_id}", response_model=PostResponse)
-def get_post(post_id: int, db: Annotated[Session, Depends(get_db)]):
+def get_post(request: Request, post_id: int, db: Annotated[Session, Depends(get_db)]):
     result = db.execute(select(models.Post).where(models.Post.id == post_id))
     post = result.scalars().first()
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
-    return post             
-
+    return templates.TemplateResponse(request, "post.html", {"post": post, "title": post.title[:50]})
 
 @app.exception_handler(StarletteHTTPException)
 def general_http_exception_handler(request: Request, exception: StarletteHTTPException):
