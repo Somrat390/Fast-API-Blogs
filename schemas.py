@@ -16,7 +16,7 @@ class UserResponse(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    img_file: str | None
+    image_file: str | None
     image_path: str
 
 class UserUpdate(BaseModel):
